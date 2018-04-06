@@ -1,5 +1,6 @@
 #-*- encoding: UTF-8 -*-
 import unittest
+import gc
 from pycogram import *
 
 class GraphTestCases(unittest.TestCase):
