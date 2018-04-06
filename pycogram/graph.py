@@ -5,7 +5,7 @@ class Graph:
     """
     Graph data structure. Represented as an adjacency list.
     The graph is a dictionary of nodes (as keys), adjacent nodes and weights (as keys/values in the sub-level dictionaries).
-    reference: https://stackoverflow.com/questions/19472530
+    Reference: https://stackoverflow.com/questions/19472530
     """
 
     def __init__(self, edges=[], directed=False):
@@ -18,7 +18,7 @@ class Graph:
         self.add_edges(edges)
 
     """
-    manipulate the graph.
+    Manipulate the graph.
     """
     
     def add_edges(self, edges):
@@ -58,7 +58,7 @@ class Graph:
             pass
 
     """
-    get values.
+    Get values.
     """
     
     def nodes(self):
@@ -84,7 +84,7 @@ class Graph:
             return self._graph[node1][node2]
     
     """
-    get booleans.
+    Get booleans.
     """
     
     def is_connected(self, node1, node2):
@@ -106,7 +106,7 @@ class Graph:
         return all([weight >= 0 for edge in self._graph.values() for weight in edge.values()])
 
     """
-    override functions.
+    Override functions.
     """
     
     def __str__(self):

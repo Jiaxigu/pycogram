@@ -1,2 +1,2 @@
 # pycogram
-A minimalisitic python compilation of graph algorithms.
+A minimalistic python compilation of graph algorithms.

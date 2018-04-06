@@ -5,6 +5,7 @@ class Dijkstra:
     """
     Given a graph instance and an initial node within the graph, find shortest paths for all nodes.
     The edges in the graph must be non-negative.
+    Reference: https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm#pseudocode
     """
     
     def __init__(self, graph, initial_node):
@@ -23,6 +24,10 @@ class Dijkstra:
         self._prev = {}
         self._calculate()
         
+    """
+    Implementation of Dijkstra's.
+    """
+    
     def _find_min_node(self):
         """
         Find the unvisited node with mininum distance.
@@ -31,7 +36,7 @@ class Dijkstra:
         
     def _calculate(self):
         """
-        Calculate shortest paths and distances for all nodes. 
+        Implement Dijkstra's algorithm to calculate shortest paths and distances for all nodes. 
         """
         
         for v in self._unvisited_nodes:
@@ -49,7 +54,12 @@ class Dijkstra:
                 if new_dist < self._dist[adj_node]:
                     self._dist[adj_node] = new_dist
                     self._prev[adj_node] = u
-                    
+    
+    
+    """
+    Interpret the results.
+    """
+    
     def shortest_distance_of(self, node):
         """
         Return the shortest distance from source of a given node.
