@@ -24,7 +24,7 @@ class Dijkstra:
         self._initial_node = initial_node
         self._dist = {}
         self._prev = {}
-        self._run_dijkstra()
+        self._run()
         
     """
     Implementation of Dijkstra's.
@@ -36,7 +36,7 @@ class Dijkstra:
         """
         return min(self._unvisited_nodes, key=(lambda x:self._dist[x]))
         
-    def _run_dijkstra(self):
+    def _run(self):
         """
         Implement Dijkstra's algorithm to calculate shortest paths and distances for all nodes. 
         """
@@ -66,7 +66,7 @@ class Dijkstra:
         """
         Return the shortest distance from source of a given node.
         """
-        if node not in self._dist.keys():
+        if node not in self._Graph.nodes:
             raise ValueError('Node {} is not in the graph'.format(node))
         else:
             return self._dist[node]
@@ -75,7 +75,7 @@ class Dijkstra:
         """
         Return the shortest path from source of a given node.
         """
-        if node not in self._dist.keys():
+        if node not in self._Graph.nodes:
             raise ValueError('Node {} is not in the graph'.format(node))
         else:
             current_node = node
