@@ -38,6 +38,7 @@ class Graph:
     def add(self, node1, node2, weight=1.):
         """
         Add directed or bidirected edge between node1 and node2.
+        If the edge already exists, update the edge weight.
         """
         self._graph[node1][node2] = weight
         if not self._directed:
@@ -70,6 +71,7 @@ class Graph:
     def adjacent_nodes_of(self, node):
         """
         Return all adjacent nodes in the graph of a given node.
+        If the node is not in the graph, an empty set will be returned.
         """
         return set(self._graph[node].keys())
     
