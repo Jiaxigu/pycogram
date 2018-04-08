@@ -130,7 +130,13 @@ class DijkstraExceptionTestCases(unittest.TestCase):
         self.graph.add(1, 2, -1.)
         with self.assertRaises(ValueError):
             d = Dijkstra(self.graph, 1)
-        
+            
+    def test_node_exception(self):
+        d = Dijkstra(self.graph, 1)
+        with self.assertRaises(ValueError):
+            d.shortest_path_of('Node')
+        with self.assertRaises(ValueError):
+            d.shortest_distance_of('Node')
 
 def suite_loader():
     test_cases = (GraphTestCases, DirectedGraphTestCases, DijkstraTestCases, DijkstraExceptionTestCases,)

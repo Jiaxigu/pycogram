@@ -73,9 +73,12 @@ class Dijkstra:
         """
         Return the shortest path from source of a given node.
         """
-        current_node = node
-        path = [node]
-        while current_node != self._initial_node:
-            current_node = self._prev[current_node]
-            path.append(current_node)
-        return path[::-1]
+        if node not in self._dist.keys():
+            raise ValueError('Node is not in the graph')
+        else:
+            current_node = node
+            path = [node]
+            while current_node != self._initial_node:
+                current_node = self._prev[current_node]
+                path.append(current_node)
+            return path[::-1]
