@@ -3,26 +3,28 @@ import math
 
 class Dijkstra:
     """
-    Given a graph instance and an initial node within the graph, find shortest paths for all nodes.
+    Given a graph and an initial node within the graph, find shortest paths and distances for all nodes.
     The edges in the graph must be non-negative.
-    Reference: https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm#pseudocode
+    Reference: 
+    - https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm#pseudocode
+    - Cormen T H. Introduction to algorithms[M]. MIT press, 2009.
     """
     
     def __init__(self, graph, initial_node):
         """
         Init data structures for Dijkstra's algorithm.
         """
-        if initial_node not in graph.nodes():
-            raise ValueError('The initial node is not in the graph.')
-        elif not graph.is_nonnegative():
+        if initial_node not in graph.nodes:
+            raise ValueError('The initial node {} is not in the graph.'.format(initial_node))
+        if not graph.is_nonnegative:
             raise ValueError('There are non-positive edges in the graph.')
             
         self._Graph = graph
-        self._unvisited_nodes = graph.nodes()
+        self._unvisited_nodes = graph.nodes
         self._initial_node = initial_node
         self._dist = {}
         self._prev = {}
-        self._calculate()
+        self._run_dijkstra()
         
     """
     Implementation of Dijkstra's.
@@ -32,9 +34,9 @@ class Dijkstra:
         """
         Find the unvisited node with mininum distance.
         """
-        return min(self._Graph._graph.keys(), key=(lambda x:self._dist[x] if x in self._unvisited_nodes else math.inf))
+        return min(self._unvisited_nodes, key=(lambda x:self._dist[x]))
         
-    def _calculate(self):
+    def _run_dijkstra(self):
         """
         Implement Dijkstra's algorithm to calculate shortest paths and distances for all nodes. 
         """
@@ -65,7 +67,7 @@ class Dijkstra:
         Return the shortest distance from source of a given node.
         """
         if node not in self._dist.keys():
-            raise ValueError('Node is not in the graph')
+            raise ValueError('Node {} is not in the graph'.format(node))
         else:
             return self._dist[node]
     
@@ -74,7 +76,7 @@ class Dijkstra:
         Return the shortest path from source of a given node.
         """
         if node not in self._dist.keys():
-            raise ValueError('Node is not in the graph')
+            raise ValueError('Node {} is not in the graph'.format(node))
         else:
             current_node = node
             path = [node]

@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='pycogram',
-    version='0.1.0',
+    version='0.1.1',
     description='A python compilation of graph algorithms',
     author='Jiaxi Gu',
     author_email='jiaxi.gu@epfl.ch',

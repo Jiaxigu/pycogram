@@ -43,11 +43,13 @@ class GraphTestCases(unittest.TestCase):
         self.assertEqual(len(self.graph), 3)
     
     def test_get_nodes(self):
-        self.assertEqual(len(self.graph.nodes()), 4)
+        self.assertEqual(len(self.graph.nodes), 4)
     
     def test_adjacent_nodes(self):
         self.assertEqual(self.graph.adjacent_nodes_of(1), {2, 3})
         self.assertEqual(len(self.graph.adjacent_nodes_of('Kool')), 0)
+        # inspect the problem with defaultdict
+        self.assertEqual(len(self.graph), 4)
     
     def test_get_weight(self):
         self.assertEqual(self.graph.get_weight(3, 4), 1.)
@@ -55,16 +57,16 @@ class GraphTestCases(unittest.TestCase):
             self.graph.get_weight(1, 10)
             
     def test_is_positive(self):
-        self.assertEqual(self.graph.is_positive(), True)
-        self.assertEqual(self.graph.is_nonnegative(), True)
+        self.assertEqual(self.graph.is_positive, True)
+        self.assertEqual(self.graph.is_nonnegative, True)
         # add a zero-weight edge
         self.graph.add(1, 4, 0.)
-        self.assertEqual(self.graph.is_positive(), False)
-        self.assertEqual(self.graph.is_nonnegative(), True)
+        self.assertEqual(self.graph.is_positive, False)
+        self.assertEqual(self.graph.is_nonnegative, True)
         # add a negative-weight edge
         self.graph.add(2, 3, -2.)
-        self.assertEqual(self.graph.is_positive(), False)
-        self.assertEqual(self.graph.is_nonnegative(), False) 
+        self.assertEqual(self.graph.is_positive, False)
+        self.assertEqual(self.graph.is_nonnegative, False) 
 
         
 class DirectedGraphTestCases(unittest.TestCase):
@@ -77,9 +79,10 @@ class DirectedGraphTestCases(unittest.TestCase):
     
     def tearDown(self):
         del(self.graph)
-        
+
     def test_directed(self):
         self.graph.add(1, 2, 3.)
+        self.assertEqual(len(self.graph), 2)
         self.assertEqual(self.graph.get_weight(1, 2), 3.)
         with self.assertRaises(ValueError):
             self.graph.get_weight(2, 1)
