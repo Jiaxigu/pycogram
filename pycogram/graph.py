@@ -113,6 +113,25 @@ class Graph:
         """
         return all([weight >= 0 for edge in self._graph.values() for weight in edge.values()])
 
+    @property
+    def is_cyclic(self):
+        """
+        Boolean value: does the graph contains a cycle?
+        """
+        path = set()
+        visited = set()
+        def visit(node):
+            if node in visited:
+                return False
+            visited.add(node)
+            path.add(node)
+            for neighbour in self.adjacent_nodes_of(node):
+                if neighbour in path or visit(neighbour):
+                    return True
+            path.remove(node)
+            return False
+        return any(visit(v) for v in self.nodes)
+
     def is_connected(self, node1, node2):
         """
         Boolean value: is node1 directly connected to node2?

@@ -31,7 +31,7 @@ Create an empty, directed graph:
 
 Create an undirected graph:
 
-	>>> g = Graph([(1, 2, 3.), (1, 3, 2.), (2, 4, 1.), (3, 4, 6.), (2, 3, 0.5))], directed=False)
+	>>> g = Graph([(1, 2, 3.), (1, 3, 2.), (2, 4, 1.), (3, 4, 6.), (2, 3, 0.5)], directed=False)
 	
 ### Run algorithms
 
