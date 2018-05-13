@@ -1,64 +1,79 @@
 # -*- coding: utf-8 -*-
 import math
+from collections import deque
 
-class Dijkstra:
+class DAG:
     """
-    Given a graph and an initial node within the graph, find shortest paths and distances for all nodes.
-    The edges in the graph must be non-negative.
+    Given a directed acyclic graph(DAG) and an initial node within the graph, find shortest paths and distances for all nodes.
     Reference: 
-    - https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm#pseudocode
+    - https://en.wikipedia.org/wiki/Directed_acyclic_graph#Path_algorithms
     - Cormen T H. Introduction to algorithms[M]. MIT press, 2009.
     """
     
     def __init__(self, graph, initial_node):
         """
-        Init data structures for Dijkstra's algorithm.
+        Init data structures for DAG algorithm.
         """
         if initial_node not in graph.nodes:
             raise ValueError('The initial node {} is not in the graph.'.format(initial_node))
-        if not graph.is_nonnegative:
+        if graph.is_cyclic:
             raise ValueError('There are non-positive edges in the graph.')
             
         self._Graph = graph
-        self._unvisited_nodes = graph.nodes
         self._initial_node = initial_node
+        self._untouched = graph.nodes
+        self._sorted = deque()
         self._dist = {}
         self._prev = {}
+        
+        self._topological_sort()
         self._run()
         
     """
-    Implementation of Dijkstra's.
+    Implementation of DAG.
     """
     
-    def _find_min_node(self):
+    def _topological_sort(self):
         """
-        Find the unvisited node with mininum distance.
+        Topological sort on the DAG.
         """
-        return min(self._unvisited_nodes, key=(lambda x:self._dist[x]))
+        for node in self._Graph.nodes:
+            if node in self._untouched:
+                self._visit(node)
+        if len(self._Graph.nodes) == len(self._sorted):
+            print('Topological sort done...')
+        else:
+            raise ValueError('Topological sort failed: {} expected but {} sorted'.format(len(self._Graph.nodes), len(self._sorted)))
+        
+    def _visit(self, node):
+        """
+        visit a node in DFS search.
+        """
+        self._untouched.remove(node)
+        for n in self._Graph.adjacent_nodes_of(node):
+            if n in self._untouched:
+                self._visit(n)
+        self._sorted.appendleft(node)
         
     def _run(self):
         """
-        Implement Dijkstra's algorithm to calculate shortest paths and distances for all nodes. 
+        Implement DAG algorithm to calculate shortest paths and distances for all nodes. 
         """
-        
-        for v in self._unvisited_nodes:
+        for v in self._sorted:
             self._dist[v] = math.inf
             self._prev[v] = None
-        
         self._dist[self._initial_node] = 0
         
-        while self._unvisited_nodes:
-            u = self._find_min_node()
-            self._unvisited_nodes.remove(u)
-            
+        while self._sorted:
+            u = self._sorted.popleft()
             for adj_node in self._Graph.adjacent_nodes_of(u):
                 new_dist = self._dist[u] + self._Graph.get_weight(u, adj_node)
                 if new_dist < self._dist[adj_node]:
                     self._dist[adj_node] = new_dist
                     self._prev[adj_node] = u
-        
-        print('Successfully run Dijkstra...')
-    
+                    
+        print('Successfully run DAG...')
+                    
     """
     Interpret the results.
     """

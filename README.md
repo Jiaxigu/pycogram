@@ -8,6 +8,7 @@ A minimalistic python compilation of graph algorithms.
 
 - __Shortest path__
 	- Dijkstra's Algorithm
+	- DAG
 
 ## Requirement
 
