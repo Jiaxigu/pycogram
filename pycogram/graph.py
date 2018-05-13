@@ -13,19 +13,19 @@ class Graph:
     Reference: https://stackoverflow.com/questions/19472530
     """
 
-    def __init__(self, edges=[], directed=False):
+    def __init__(self, edges=None, directed=False):
         """
         Init a Graph instance given edges.
-        If edges are not given,
-        init an empty graph.
+        If edges are not given, init an empty graph.
         """
         self._graph = defaultdict(dict)
         self._directed = directed
-        self.add_edges(edges)
+        if edges:
+            self.add_edges(edges)
 
     def add_edges(self, edges):
         """
-        Add edges (list of weightless 2-tuples or/and weighted 3-tuples) to graph.
+        Add edges (list of unweighted 2-tuples or/and weighted 3-tuples) to graph.
         """
         for edge in edges:
             if len(edge) == 2:
@@ -46,12 +46,13 @@ class Graph:
         if not self._directed:
             self._graph[node2][node1] = weight
 
-    def remove(self, node, remove_edges=True):
+    def remove(self, node, remove_edges_only=False):
         """
         Remove node and all edges to this node.
-        Only remove outgoing edges if remove_edges=False.
+        If remove_edges_only is True, remove all outgoing edges from this node,
+        but node itself and all incoming edges will be kept.
         """
-        if remove_edges:
+        if not remove_edges_only:
             for related_edges in self._graph.values():
                 try:
                     related_edges.pop(node)
@@ -80,7 +81,7 @@ class Graph:
         """
         adj_nodes = set(self._graph[node].keys())
         if not adj_nodes:
-            self.remove(node, remove_edges=False)
+            self.remove(node, remove_edges_only=True)
         return adj_nodes
 
     def get_weight(self, node1, node2):
@@ -92,6 +93,12 @@ class Graph:
             raise ValueError('There is no edge between the given nodes')
         else:
             return self._graph[node1][node2]
+
+    def is_connected(self, node1, node2):
+        """
+        Boolean value: is node1 directly connected to node2?
+        """
+        return node1 in self._graph and node2 in self._graph[node1]
 
     @property
     def is_positive(self):
@@ -114,6 +121,7 @@ class Graph:
         """
         path = set()
         visited = set()
+
         def visit(node):
             """
             Visit a node.
@@ -127,13 +135,8 @@ class Graph:
                     return True
             path.remove(node)
             return False
-        return any(visit(v) for v in self.nodes)
 
-    def is_connected(self, node1, node2):
-        """
-        Boolean value: is node1 directly connected to node2?
-        """
-        return node1 in self._graph and node2 in self._graph[node1]
+        return any(visit(v) for v in self.nodes)
 
     def __str__(self):
         """

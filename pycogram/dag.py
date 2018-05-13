@@ -1,105 +1,76 @@
 # -*- coding: utf-8 -*-
 """
-Single-source shortest path algorithm for directed acyclic graphs(DAG).
+Single-source shortest path algorithm for directed acyclic graphs.
 """
 
 import math
 from collections import deque
 
-class Dag:
+def dag(graph, source):
     """
-    Given a directed acyclic graph(DAG) and an initial node within the graph,
+    Given a directed acyclic graph(DAG) and a source within the graph,
     find shortest paths and distances for all nodes.
-    Reference:
+
+    Parameters
+    ----------
+    - graph: Graph
+        a DAG graph.
+    - source: node
+        a hashable object representing the source in graph.
+
+    Returns
+    -------
+    - dist: dict
+        shortest distance to source for each node.
+    - prev: dict
+        last node on the shortest path for each node.
+
+    Raises
+    ------
+    - ValueError
+        if source is not in graph, or graph is cyclic.
+
+    Reference
+    ---------
     - https://en.wikipedia.org/wiki/Directed_acyclic_graph#Path_algorithms
     - Cormen T H. Introduction to algorithms[M]. MIT press, 2009.
     """
 
-    def __init__(self, graph, initial_node):
-        """
-        Init data structures for DAG algorithm.
-        """
-        if initial_node not in graph.nodes:
-            raise ValueError('The initial node {} is not in the graph.'.format(initial_node))
-        if graph.is_cyclic:
-            raise ValueError('There are non-positive edges in the graph.')
+    if source not in graph.nodes:
+        raise ValueError('The given source {} is not in the graph.'.format(source))
+    if graph.is_cyclic:
+        raise ValueError('The graph is cyclic.')
 
-        self._graph = graph
-        self._initial_node = initial_node
-        self._untouched = graph.nodes
-        self._sorted = deque()
-        self._dist = {}
-        self._prev = {}
+    unvisited_nodes = graph.nodes
+    sorted_nodes = deque()
+    dist = {}
+    prev = {}
 
-        self._topological_sort()
-        self._run()
+    def _visit(node):
+        """
+        visit a node in the DFS search.
+        """
+        unvisited_nodes.remove(node)
+        for adj_node in graph.adjacent_nodes_of(node):
+            if adj_node in unvisited_nodes:
+                _visit(adj_node)
+        sorted_nodes.appendleft(node)
 
-    def _topological_sort(self):
-        """
-        Topological sort on the DAG.
-        """
-        for node in self._graph.nodes:
-            if node in self._untouched:
-                self._visit(node)
-        if len(self._graph.nodes) == len(self._sorted):
-            print('Topological sort done...')
-        else:
-            raise ValueError('Topological sort failed: {} expected but {} sorted'
-                             .format(
-                                 len(self._graph.nodes),
-                                 len(self._sorted)
-                             ))
+    for node in graph.nodes:
+        if node in unvisited_nodes:
+            _visit(node)
 
-    def _visit(self, node):
-        """
-        visit a node in DFS search.
-        """
-        self._untouched.remove(node)
-        for adj_node in self._graph.adjacent_nodes_of(node):
-            if adj_node in self._untouched:
-                self._visit(adj_node)
-        self._sorted.appendleft(node)
+    for node in sorted_nodes:
+        dist[node] = math.inf
+        prev[node] = None
+    dist[source] = 0
 
-    def _run(self):
-        """
-        Implement DAG algorithm to calculate shortest paths and distances for all nodes.
-        """
-        for node in self._sorted:
-            self._dist[node] = math.inf
-            self._prev[node] = None
-        self._dist[self._initial_node] = 0
+    while sorted_nodes:
+        next_node = sorted_nodes.popleft()
+        for adj_node in graph.adjacent_nodes_of(next_node):
+            new_dist = dist[next_node] + graph.get_weight(next_node, adj_node)
+            if new_dist < dist[adj_node]:
+                dist[adj_node] = new_dist
+                prev[adj_node] = next_node
 
-        while self._sorted:
-            node = self._sorted.popleft()
-            for adj_node in self._graph.adjacent_nodes_of(node):
-                new_dist = self._dist[node] + self._graph.get_weight(node, adj_node)
-                if new_dist < self._dist[adj_node]:
-                    self._dist[adj_node] = new_dist
-                    self._prev[adj_node] = node
-
-        print('Successfully run DAG...')
-
-    def shortest_distance_of(self, node):
-        """
-        Return the shortest distance from source of a given node.
-        """
-        if node not in self._graph.nodes:
-            raise ValueError('Node {} is not in the graph'.format(node))
-        else:
-            return self._dist[node]
-
-    def shortest_path_of(self, node):
-        """
-        Return the shortest path from source of a given node.
-        """
-        if node not in self._graph.nodes:
-            raise ValueError('Node {} is not in the graph'.format(node))
-        elif self._dist[node] == math.inf:
-            return []
-        else:
-            current_node = node
-            path = [node]
-            while current_node != self._initial_node:
-                current_node = self._prev[current_node]
-                path.append(current_node)
-            return path[::-1]
+    return dist, prev

@@ -5,80 +5,58 @@ Single-source shortest path algorithm for non-negative graphs.
 
 import math
 
-class Dijkstra:
+def dijkstra(graph, source):
     """
-    Given a graph and an initial node within the graph,
+    Given a graph and a source within the graph,
     find shortest paths and distances for all nodes.
     The edges in the graph must be non-negative.
-    Reference:
+
+    Parameters
+    ----------
+    - graph: Graph
+        a non-negative graph.
+    - source: node
+        a hashable object representing the source in graph.
+
+    Returns
+    -------
+    - dist: dict
+        shortest distance to source for each node.
+    - prev: dict
+        last node on the shortest path for each node.
+
+    Raises
+    ------
+    - ValueError
+        if source is not in graph or negative edge exists.
+
+    Reference
+    ---------
     - https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm#pseudocode
     - Cormen T H. Introduction to algorithms[M]. MIT press, 2009.
     """
+    if source not in graph.nodes:
+        raise ValueError('The given source {} is not in the graph.'.format(source))
+    if not graph.is_nonnegative:
+        raise ValueError('There are non-positive edges in the graph.')
 
-    def __init__(self, graph, initial_node):
-        """
-        Init data structures for Dijkstra's algorithm.
-        """
-        if initial_node not in graph.nodes:
-            raise ValueError('The initial node {} is not in the graph.'.format(initial_node))
-        if not graph.is_nonnegative:
-            raise ValueError('There are non-positive edges in the graph.')
+    unvisited_nodes = graph.nodes
+    dist = {}
+    prev = {}
 
-        self._graph = graph
-        self._unvisited_nodes = graph.nodes
-        self._initial_node = initial_node
-        self._dist = {}
-        self._prev = {}
-        self._run()
+    for node in graph.nodes:
+        dist[node] = math.inf
+        prev[node] = None
+    dist[source] = 0
 
-    def _find_min_node(self):
-        """
-        Find the unvisited node with mininum distance.
-        """
-        return min(self._unvisited_nodes, key=(lambda x: self._dist[x]))
+    while unvisited_nodes:
+        min_node = min(unvisited_nodes, key=(lambda x: dist[x]))
+        unvisited_nodes.remove(min_node)
 
-    def _run(self):
-        """
-        Implement Dijkstra's algorithm to calculate shortest paths and distances for all nodes.
-        """
-        for node in self._graph.nodes:
-            self._dist[node] = math.inf
-            self._prev[node] = None
-        self._dist[self._initial_node] = 0
+        for adj_node in graph.adjacent_nodes_of(min_node):
+            new_dist = dist[min_node] + graph.get_weight(min_node, adj_node)
+            if new_dist < dist[adj_node]:
+                dist[adj_node] = new_dist
+                prev[adj_node] = min_node
 
-        while self._unvisited_nodes:
-            min_node = self._find_min_node()
-            self._unvisited_nodes.remove(min_node)
-
-            for adj_node in self._graph.adjacent_nodes_of(min_node):
-                new_dist = self._dist[min_node] + self._graph.get_weight(min_node, adj_node)
-                if new_dist < self._dist[adj_node]:
-                    self._dist[adj_node] = new_dist
-                    self._prev[adj_node] = min_node
-
-        print('Successfully run Dijkstra...')
-
-    def shortest_distance_of(self, node):
-        """
-        Return the shortest distance from source of a given node.
-        """
-        if node not in self._graph.nodes:
-            raise ValueError('Node {} is not in the graph'.format(node))
-        else:
-            return self._dist[node]
-
-    def shortest_path_of(self, node):
-        """
-        Return the shortest path from source of a given node.
-        """
-        if node not in self._graph.nodes:
-            raise ValueError('Node {} is not in the graph'.format(node))
-        elif self._dist[node] == math.inf:
-            return []
-        else:
-            current_node = node
-            path = [node]
-            while current_node != self._initial_node:
-                current_node = self._prev[current_node]
-                path.append(current_node)
-            return path[::-1]
+    return dist, prev

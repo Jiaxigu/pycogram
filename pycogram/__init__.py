@@ -2,6 +2,8 @@
 Manage all modules in pycogram.
 """
 
-from .dag import Dag
-from .dijkstra import Dijkstra
+from .dag import dag
+from .dijkstra import dijkstra
+
 from .graph import Graph
+from .solution import *
