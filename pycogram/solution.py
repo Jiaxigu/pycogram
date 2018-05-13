@@ -5,10 +5,6 @@ Saving and extracting solutions for different graph problems.
 
 import math
 
-__all__ = [
-    'ShortestPath'
-]
-
 class ShortestPath:
     """
     Solve single-source shortest path problem.

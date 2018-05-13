@@ -5,6 +5,7 @@ Test cases for pycogram.
 
 import unittest
 import gc
+import math
 from pycogram import *
 
 class GraphTestCases(unittest.TestCase):
@@ -14,14 +15,14 @@ class GraphTestCases(unittest.TestCase):
     """
     def setUp(self):
         self.graph = Graph([
-            (1, 2, 3.), 
-            (1, 3, 2.), 
-            (2, 4, 6.), 
+            (1, 2, 3.),
+            (1, 3, 2.),
+            (2, 4, 6.),
             (3, 4)
         ], directed=False)
 
     def tearDown(self):
-        del(self.graph)
+        del self.graph
         gc.collect()
 
     def test_len(self):
@@ -66,7 +67,7 @@ class GraphTestCases(unittest.TestCase):
         self.assertEqual(self.graph.is_nonnegative, True)
         self.graph.add(2, 3, -2.)
         self.assertEqual(self.graph.is_positive, False)
-        self.assertEqual(self.graph.is_nonnegative, False) 
+        self.assertEqual(self.graph.is_nonnegative, False)
 
 class DirectedGraphTestCases(unittest.TestCase):
     """
@@ -77,7 +78,7 @@ class DirectedGraphTestCases(unittest.TestCase):
         self.graph = Graph(directed=True)
 
     def tearDown(self):
-        del(self.graph)
+        del self.graph
 
     def test_directed(self):
         self.graph.add(1, 2, 3.)
@@ -95,30 +96,119 @@ class DijkstraTestCases(unittest.TestCase):
     Test cases for Dijkstra's algorithm.
     """
     def setUp(self):
-        self.graph = Graph([(1, 2, 3.), (1, 3, 2.), (2, 4, 1.), (3, 4, 6.), (2, 3, 0.5)], directed=False)
-        
+        self.graph = Graph([
+            (1, 2, 3.),
+            (1, 3, 2.),
+            (2, 4, 1.),
+            (3, 4, 6.),
+            (2, 3, 0.5)
+        ], directed=False)
+
     def tearDown(self):
-        del(self.graph)
+        del self.graph
         gc.collect()
-        
+
     def test_dijkstra_correctness(self):
         dist, prev = dijkstra(self.graph, 1)
         self.assertEqual(dist[1], 0.)
         self.assertEqual(dist[4], 3.5)
         self.assertEqual(prev[1], None)
         self.assertEqual(prev[4], 2)
-        
+
     def test_source_exception(self):
         with self.assertRaises(ValueError):
-            dist, prev = dijkstra(self.graph, 'Initial')
-    
+            dijkstra(self.graph, 'Initial')
+
     def test_negative_weight_exception(self):
         self.graph.add(1, 2, -1.)
         with self.assertRaises(ValueError):
-            dist, prev = dijkstra(self.graph, 1)
+            dijkstra(self.graph, 1)
+
+class DagTestCases(unittest.TestCase):
+    """
+    Test cases for DAG algorithm.
+    """
+    def setUp(self):
+        nodes = [
+            ('r', 's', 5),
+            ('s', 't', 2),
+            ('t', 'x', 7),
+            ('x', 'y', -1),
+            ('y', 'z', -2),
+            ('r', 't', 3),
+            ('t', 'y', 4),
+            ('t', 'z', 2),
+            ('s', 'x', 6),
+            ('x', 'z', 1)
+        ]
+        self.graph = Graph(nodes, directed=True)
+
+    def tearDown(self):
+        del self.graph
+        gc.collect()
+
+    def test_dag_correctness(self):
+        dist, prev = dag(self.graph, 's')
+        self.assertEqual(dist['x'], 6)
+        self.assertEqual(dist['r'], math.inf)
+        self.assertEqual(prev['r'], None)
+        self.assertEqual(prev['z'], 'y')
+
+    def test_source_exception(self):
+        with self.assertRaises(ValueError):
+            dag(self.graph, 'Initial')
+
+    def test_cyclic_graph_exception(self):
+        self.graph.add('x', 's', 1.)
+        with self.assertRaises(ValueError):
+            dag(self.graph, 's')
+
+class SolutionTestCases(unittest.TestCase):
+    """
+    Test cases for Solution module.
+    """
+    def setUp(self):
+        nodes = [
+            ('r', 's', 5),
+            ('s', 't', 2),
+            ('t', 'x', 7),
+            ('x', 'y', -1),
+            ('y', 'z', -2),
+            ('r', 't', 3),
+            ('t', 'y', 4),
+            ('t', 'z', 2),
+            ('s', 'x', 6),
+            ('x', 'z', 1)
+        ]
+        self.graph = Graph(nodes, directed=True)
+        self.sp = ShortestPath(self.graph, 's', dag)
+
+    def tearDown(self):
+        del self.graph
+        gc.collect()
+
+    def test_correctness(self):
+        self.assertEqual(self.sp.shortest_distance_of('r'), math.inf)
+        self.assertEqual(self.sp.shortest_path_of('s'), ['s'])
+        self.assertEqual(self.sp.shortest_path_of('y'), ['s', 'x', 'y'])
+        self.assertEqual(self.sp.shortest_path_of('r'), [])
+
+    def test_distance_exception(self):
+        with self.assertRaises(ValueError):
+            self.sp.shortest_distance_of('a')
+
+    def test_path_exception(self):
+        with self.assertRaises(ValueError):
+            self.sp.shortest_path_of('nope')
 
 def suite_loader():
-    test_cases = (GraphTestCases, DirectedGraphTestCases, DijkstraTestCases,)
+    test_cases = (
+        GraphTestCases,
+        DirectedGraphTestCases,
+        DijkstraTestCases,
+        DagTestCases,
+        SolutionTestCases,
+    )
     suite = unittest.TestSuite()
     for test_case in test_cases:
         tests = unittest.defaultTestLoader.loadTestsFromTestCase(test_case)
