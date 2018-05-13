@@ -6,10 +6,10 @@
     only:
       - master
   install:
-    - pip install coveralls
-    - pip install coverage
+    - pip install coveralls coverage pylint
   script:
     - python setup.py install
+    - pylint pycogram/*.py --errors-only
     - coverage run test.py -v
   after_success:
     - coveralls
