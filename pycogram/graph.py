@@ -79,7 +79,7 @@ class Graph:
         If the node is not in the graph, an empty set will be returned.
         """
         adj_nodes = set(self._graph[node].keys())
-        if adj_nodes:
+        if not adj_nodes:
             self.remove(node, remove_edges=False)
         return adj_nodes
 
