@@ -2,6 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/Jiaxigu/pycogram/badge.svg?branch=master)](https://coveralls.io/github/Jiaxigu/pycogram?branch=master)
 
 # pycogram
+
 A minimalistic python compilation of graph algorithms.
 
 ## Algorithms
@@ -16,42 +17,41 @@ A minimalistic python compilation of graph algorithms.
 
 ## Install (sudo might be required)
 
-	>>> python setup.py install
+	python setup.py install
 
 ## Testing
 
-	>>> python test.py -v
+	python test.py -v
 
 ## Usage
 
 ### Init
 
-Create an empty, directed graph:
+Create an directed graph with edges (Example from Introduction to Algorithms, 3rd Edition):
 
-	>>> g = Graph(directed=True)
+	edges = [
+	    ('r', 's', 5),
+	    ('s', 't', 2),
+	    ('t', 'x', 7),
+	    ('x', 'y', -1),
+	    ('y', 'z', -2),
+	    ('r', 't', 3),
+	    ('t', 'y', 4),
+	    ('t', 'z', 2),
+	    ('s', 'x', 6),
+	    ('x', 'z', 1)
+	]
+	g = Graph(edges, directed=True)
 
-Create an undirected graph:
-
-	>>> g = Graph([(1, 2, 3.), (1, 3, 2.), (2, 4, 1.), (3, 4, 6.), (2, 3, 0.5)], directed=False)
 	
 ### Run algorithms
 
-Run Dijkstra's algorithm to find the shortest path:
+Run DAG to find the shortest path:
 
-	>>> d = Dijkstra(g, 1)
-	>>> d.shortest_path_of(4)
-	<<< [1, 3, 2, 4]
-	>>> d.shortest_distance_of(4)
-	<<< 3.5
-
-
-
-
-
-
-
-
-
-
+	sp = ShortestPath(g, source='s', func=dag)
+	sp.shortest_distance_of('y')
+	>>> 5
+	sp.shortest_path_of('z')
+	>>> ['s', 'x', 'y', 'z']
 
 
