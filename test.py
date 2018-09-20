@@ -187,11 +187,11 @@ class BellmanFordTestCases(unittest.TestCase):
         gc.collect()
 
     def test_bf_correctness(self):
-        dist, prev = dag(self.graph, 's')
-        self.assertEqual(dist['x'], 6)
+        dist, prev = bellman_ford(self.graph, 's')
+        self.assertEqual(dist['x'], 4)
         self.assertEqual(dist['z'], -2)
-        self.assertEqual(prev['t'], 's')
-        self.assertEqual(prev['y'], 'x')
+        self.assertEqual(prev['t'], 'x')
+        self.assertEqual(prev['y'], 's')
 
     def test_source_exception(self):
         with self.assertRaises(ValueError):
