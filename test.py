@@ -163,6 +163,49 @@ class DagTestCases(unittest.TestCase):
         with self.assertRaises(ValueError):
             dag(self.graph, 's')
 
+class BellmanFordTestCases(unittest.TestCase):
+    """
+    Test cases for Bellman-Ford algorithm.
+    """
+    def setUp(self):
+        nodes = [
+            ('s', 't', 6),
+            ('t', 'x', 5),
+            ('x', 't', -2),
+            ('s', 'y', 7),
+            ('y', 'x', -3),
+            ('y', 'z', 9),
+            ('t', 'y', 8),
+            ('t', 'z', -4),
+            ('z', 's', 2),
+            ('z', 'x', 7)
+        ]
+        self.graph = Graph(nodes, directed=True)
+
+    def tearDown(self):
+        del self.graph
+        gc.collect()
+
+    def test_bf_correctness(self):
+        dist, prev = dag(self.graph, 's')
+        self.assertEqual(dist['x'], 6)
+        self.assertEqual(dist['z'], -2)
+        self.assertEqual(prev['t'], 's')
+        self.assertEqual(prev['y'], 'x')
+
+    def test_source_exception(self):
+        with self.assertRaises(ValueError):
+            bellman_ford(self.graph, 'Initial')
+
+    def test_negative_circle_exception(self):
+        exp_nodes = [
+            ('a', 'b', 1),
+            ('b', 'a', -2)
+        ]
+        exp_graph = Graph(exp_nodes, directed=True)
+        with self.assertRaises(ValueError):
+            bellman_ford(self.graph, 'a')
+
 class SolutionTestCases(unittest.TestCase):
     """
     Test cases for Solution module.
@@ -207,6 +250,7 @@ def suite_loader():
         DirectedGraphTestCases,
         DijkstraTestCases,
         DagTestCases,
+        BellmanFordTestCases,
         SolutionTestCases,
     )
     suite = unittest.TestSuite()

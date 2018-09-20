@@ -57,6 +57,6 @@ def bellman_ford(graph, source):
     for node in graph.nodes:
         for adj_node in graph.adjacent_nodes_of(node):
             if dist[adj_node] > dist[node] + graph.get_weight(node, adj_node):
-                raise ValueError('')
+                raise ValueError('Negative-weight circle is detected between {} and {}.'.format(node, adj_node))
 
     return dist, prev
